@@ -235,7 +235,10 @@ def instantiate_model(model_config: Dict) -> object:
         inference_function_name = model_config['model_inference_function']
         if inference_function_name != "":
             inference_function = getattr(ModelClass, inference_function_name)
-            model = inference_function(model_params.pop('model_path'), **model_params)
+            try:
+                model = inference_function(model_params.pop('model_path'), **model_params)
+            except (ImportError, AttributeError, Exception)as e:
+                logging.info(f"Failed with exception{e}")
         else:
             model = ModelClass(model_params.pop('model_path'), **model_params)
         return model
