@@ -21,8 +21,8 @@ inference_model:
     #avx2 and gpu_layers are not compatible 
     #lib: "avx2"
     threads: 10
-    batch_size: 30
+    batch_size: 50
     context_length: 14000
     max_new_tokens: 8092
-    gpu_layers: 10
+    gpu_layers: 50
     reset: true
