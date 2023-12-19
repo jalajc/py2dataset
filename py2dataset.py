@@ -175,16 +175,16 @@ def main():
     single_process = False
 
     if '--start_dir' in arg_string:
-        start_dir = arg_string.split('--start_dir ')[1].split(' ')[0]
+        start_dir = arg_string.split('--start_dir ')[1].split(' --')[0] #changed to allow spaces in path
         arg_string = arg_string.replace(f'--start_dir {start_dir}', '')
     if '--output_dir' in arg_string:
-        output_dir = arg_string.split('--output_dir ')[1].split(' ')[0]
+        output_dir = arg_string.split('--output_dir ')[1].split(' --')[0]
         arg_string = arg_string.replace(f'--output_dir {output_dir}', '')
     if '--model_config_pathname' in arg_string:
-        model_config_pathname = arg_string.split('--model_config_pathname ')[1].split(' ')[0]
+        model_config_pathname = arg_string.split('--model_config_pathname ')[1].split(' --')[0]
         arg_string = arg_string.replace(f'--model_config_pathname {model_config_pathname}', '')
     if '--questions_pathname' in arg_string:
-        questions_pathname = arg_string.split('--questions_pathname ')[1].split(' ')[0]
+        questions_pathname = arg_string.split('--questions_pathname ')[1].split(' --')[0]
         arg_string = arg_string.replace(f'--questions_pathname {questions_pathname}', '')
     if '--use_llm' in arg_string:
         use_llm = True
