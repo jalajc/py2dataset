@@ -61,8 +61,9 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
     Returns:
         none
     """
+    file_count+= 1
     start_time=get_indian_datetime()
-    logging.info(f'Processing: {file_count=+= 1} at {start_time}: {pythonfile_path}')
+    logging.info(f'Processing: {file_count} at {start_time}: {pythonfile_path}')
     relative_path = pythonfile_path.relative_to(start_dir)
     base_name = '.'.join(part for part in relative_path.parts)
 
