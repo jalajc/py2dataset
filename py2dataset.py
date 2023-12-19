@@ -43,7 +43,7 @@ from dateutil.tz import gettz
 def get_indian_datetime():
   return datetime.datetime.now(gettz('Asia/Kolkata'))
 
-file_count=0
+file_count=1
 def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathname: str,
                         questions: Dict, use_llm: bool, output_dir: str,
                         model_config: Dict = None, single_process: bool = False) -> None:
@@ -62,7 +62,7 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
         none
     """
     start_time=get_indian_datetime()
-    logging.info(f'Processing{+file_count} at {start_time}: {pythonfile_path}')
+    logging.info(f'Processing: {+file_count} at {start_time}: {pythonfile_path}')
     relative_path = pythonfile_path.relative_to(start_dir)
     base_name = '.'.join(part for part in relative_path.parts)
 
