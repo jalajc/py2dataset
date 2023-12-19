@@ -88,7 +88,7 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
         return
 
     save_python_data(file_details, instruct_list, relative_path, output_dir)
-    logging.info(f'Took {start_time-get_indian_datetime()} time to complete {pythonfile_path}')
+    logging.info(f'Took {get_indian_datetime()-start_time} time to complete {pythonfile_path}')
 
 def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: str = '',
                model_config_pathname: str = '', use_llm: bool = False, quiet: bool = False,
