@@ -61,7 +61,7 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
     Returns:
         none
     """
-    file_count= file_count+1
+    global file_count
     start_time=get_indian_datetime()
     logging.info(f'Processing: {file_count} at {start_time}: {pythonfile_path}')
     relative_path = pythonfile_path.relative_to(start_dir)
@@ -90,6 +90,7 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
 
     save_python_data(file_details, instruct_list, relative_path, output_dir)
     logging.info(f'Took {get_indian_datetime()-start_time} time to complete {pythonfile_path}')
+    file_count= file_count+1
 
 def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: str = '',
                model_config_pathname: str = '', use_llm: bool = False, quiet: bool = False,
