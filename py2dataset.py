@@ -37,7 +37,13 @@ from get_python_file_details import get_python_file_details
 from get_python_datasets import get_python_datasets
 from get_py2dataset_params import get_questions, get_model, get_output_dir
 from save_py2dataset_output import combine_json_files, save_python_data
+import datetime
+from dateutil.tz import gettz
 
+def get_indian_datetime():
+  return datetime.datetime.now(gettz('Asia/Kolkata'))
+
+file_count=0
 def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathname: str,
                         questions: Dict, use_llm: bool, output_dir: str,
                         model_config: Dict = None, single_process: bool = False) -> None:
@@ -55,16 +61,15 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
     Returns:
         none
     """
-    logging.info(f'Processing: {pythonfile_path}')
+    start_time=get_indian_datetime()
+    logging.info(f'Processing{+file_count} at {start_time}: {pythonfile_path}')
     relative_path = pythonfile_path.relative_to(start_dir)
     base_name = '.'.join(part for part in relative_path.parts)
 
     if not single_process:
         # Instantiate llm and prompt if use_llm is True for each file to avoid
         # multiprocessing pickling problem
-        logging.info(f'I am at py2dataset.py at 65')
         model_config = get_model(model_config_pathname) if use_llm else (None, '', 0)
-        logging.info(f'I am at py2dataset.py at 67')
 
     # Use AST to get python file details
     file_details = get_python_file_details(pythonfile_path)
@@ -83,6 +88,7 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
         return
 
     save_python_data(file_details, instruct_list, relative_path, output_dir)
+    logging.info(f'Took {start_time-get_indian_datetime()} time to complete {pythonfile_path}')
 
 def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: str = '',
                model_config_pathname: str = '', use_llm: bool = False, quiet: bool = False,
