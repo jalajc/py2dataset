@@ -132,7 +132,8 @@ def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: st
     for pythonfile_path in Path(start_dir).rglob('[!_]*.py'):
         if pythonfile_path.is_dir():
             continue
-        file_count= file_count+1
+        global file_count
+        file_count +=1
         if single_process:
             process_single_file(
                 pythonfile_path,
