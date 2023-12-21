@@ -27,6 +27,11 @@ import logging
 import re
 import math
 from typing import Dict, List, Tuple
+import datetime
+from dateutil.tz import gettz
+
+def get_indian_datetime():
+  return datetime.datetime.now(gettz('Asia/Kolkata'))
 
 def clean_and_get_unique_elements(input_str: str) -> str:
     """
@@ -130,6 +135,7 @@ class DatasetGenerator:
         Returns:
             str: The generated response.
         """
+        print(f"At 133 of get_python_datasets.py at {get_indian_datetime()}\n")
         def get_context_and_prompt(query, context, code_qa):
             full_context = f"{context}\nCODE Q and A:\n{code_qa}"
             prompt = self.model_config['prompt_template'].format(context=full_context, query=query)
@@ -161,6 +167,7 @@ class DatasetGenerator:
             return ''
 
         try:
+            print(f"Waiting for response at 165 of get_python_datasets.py at {get_indian_datetime()}\n")
             response = re.sub(r'\n\s*\n', '\n\n', self.llm(prompt))
             logging.info(f'Response: {response}')
         except Exception as error:

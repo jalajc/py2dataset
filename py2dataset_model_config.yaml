@@ -20,9 +20,9 @@ inference_model:
     ## MODEL CONFIGURATION PARAMETERS (GPU 4090 - 24GB VRAM, CPU 5950x - 32 threads, 64GB RAM)
     #avx2 and gpu_layers are not compatible 
     #lib: "avx2"
-    threads: 2
-    batch_size: 50
-    context_length: 14000
-    max_new_tokens: 8092
-    gpu_layers: 100
+    threads: 4
+    batch_size: 1
+    context_length: 10000
+    max_new_tokens: 4096
+    gpu_layers: 25
     reset: true

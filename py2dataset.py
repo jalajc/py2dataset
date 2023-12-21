@@ -34,19 +34,15 @@ from typing import Dict, List
 from multiprocessing import Process
 
 from get_python_file_details import get_python_file_details
-from get_python_datasets import get_python_datasets
+from get_python_datasets import get_python_datasets, get_indian_datetime
 from get_py2dataset_params import get_questions, get_model, get_output_dir
 from save_py2dataset_output import combine_json_files, save_python_data
-import datetime
-from dateutil.tz import gettz
 
-def get_indian_datetime():
-  return datetime.datetime.now(gettz('Asia/Kolkata'))
 
 file_count=0
 def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathname: str,
                         questions: Dict, use_llm: bool, output_dir: str,
-                        model_config: Dict = None, single_process: bool = False) -> None:
+                        model_config: Dict = None, single_process: bool = False, skip_generated: bool = False) -> None:
     """
     Process a single Python file to generate question-answer pairs and instructions.
     Args:
@@ -65,11 +61,15 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
     logging.info(f'Processing: {file_count} at {start_time}: {pythonfile_path}')
     relative_path = pythonfile_path.relative_to(start_dir)
     base_name = '.'.join(part for part in relative_path.parts)
+    print ("printing filepath for instruct.json")
+    
 
     if not single_process:
         # Instantiate llm and prompt if use_llm is True for each file to avoid
         # multiprocessing pickling problem
+        print(f"At 72 of py2dataset.py at {get_indian_datetime()}\n")
         model_config = get_model(model_config_pathname) if use_llm else (None, '', 0)
+        print(f"At 74 of py2dataset.py at {get_indian_datetime()}\n")
 
     # Use AST to get python file details
     file_details = get_python_file_details(pythonfile_path)
@@ -77,22 +77,28 @@ def process_single_file(pythonfile_path: str, start_dir: str, model_config_pathn
         return
 
     # Get lists for instruct.json for python file
-    instruct_list = get_python_datasets(
-        pythonfile_path,
-        file_details,
-        base_name,
-        questions,
-        model_config
-        )
-    if instruct_list is None:
-        return
+    path_to_instruct=Path(output_dir) / relative_path.parts[0] / f"{'.'.join(part for part in relative_path.parts)}.instruct.json"
+    if not( path_to_instruct.exists() and skip_generated ):
+        instruct_list = get_python_datasets(
+            pythonfile_path,
+            file_details,
+            base_name,
+            questions,
+            model_config
+            )
+        if instruct_list is None:
+            return
+        
+        save_python_data(file_details, instruct_list, relative_path, output_dir)
+        logging.info(f'Took {get_indian_datetime()-start_time} time to complete {pythonfile_path}')        
+    
+    else:
+        logging.info(f'Skipping instruct.json generation for file {pythonfile_path}, already exist at {path_to_instruct}')
 
-    save_python_data(file_details, instruct_list, relative_path, output_dir)
-    logging.info(f'Took {get_indian_datetime()-start_time} time to complete {pythonfile_path}')
 
 def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: str = '',
                model_config_pathname: str = '', use_llm: bool = False, quiet: bool = False,
-               single_process: bool = False) -> Dict[str, List[Dict]]:
+               single_process: bool = False, skip_generated: bool = False) -> Dict[str, List[Dict]]:
     """
     Process Python files to generate question-answer pairs and instructions.
     Args:
@@ -143,7 +149,8 @@ def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: st
                 use_llm,
                 output_dir,
                 model_config,
-                single_process)
+                single_process,
+                skip_generated)
             continue
         # Spawn a new child process to manage python memory leaks
         proc = Process(
@@ -154,7 +161,8 @@ def py2dataset(start_dir: str = '', output_dir: str = '', questions_pathname: st
                 model_config_pathname,
                 questions,
                 use_llm,
-                output_dir)
+                output_dir,
+                skip_generated)
             )
         proc.start()
         proc.join()
@@ -175,6 +183,7 @@ def main():
     use_llm = False
     quiet = False
     single_process = False
+    skip_generated = False
 
     if '--start_dir' in arg_string:
         start_dir = arg_string.split('--start_dir ')[1].split(' --')[0] #changed to allow spaces in path
@@ -197,6 +206,9 @@ def main():
     if '--single_process' in arg_string:
         single_process = True
         arg_string = arg_string.replace('--single_process', '')
+    if '--skip_generated' in arg_string:
+        skip_generated = True
+        arg_string = arg_string.replace('--skip_generated', '')
 
     py2dataset(
         start_dir,
@@ -205,7 +217,8 @@ def main():
         model_config_pathname,
         use_llm,
         quiet,
-        single_process)
+        single_process,
+        skip_generated)
 
 if __name__ == "__main__":
     main()
