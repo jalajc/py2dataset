@@ -152,9 +152,7 @@ def py2dataset(
     questions_dict = get_questions(questions_pathname)
 
     # Load model configuration if LLM is used and single process mode is enabled
-    model_config = (
-        get_model(model_config_pathname) if use_llm and single_process else None
-    )
+    model_config = (get_model(model_config_pathname) if use_llm and single_process else None )
 
     if not use_llm:
         single_process = True
@@ -163,7 +161,7 @@ def py2dataset(
     for python_file_path in Path(start_dir).rglob("[!_]*.py"):
         # if use_llm is false or single_process is true then process the file within the current process
 
-        if not use_llm and single_process:
+        if not use_llm or single_process:
             process_single_python_file(
                 python_file_path,
                 start_dir,
@@ -187,7 +185,7 @@ def py2dataset(
                     questions_dict,
                     use_llm,
                     output_dir,
-                    None,
+                    model_config,
                     single_process,
                     detailed,
                     skip_regenration,
