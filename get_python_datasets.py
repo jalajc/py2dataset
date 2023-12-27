@@ -30,6 +30,45 @@ import json
 from typing import Dict, List, Tuple
 
 
+def get_response_from_http_llm(prompt: str) ->str:
+    import google.generativeai as genai
+
+    genai.configure(api_key="key")
+
+    # Set up the model
+    generation_config = {
+    "temperature": 0.9,
+    "top_p": 1,
+    "top_k": 1,
+    "max_output_tokens": 2048,
+    }
+
+    safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+    },
+    ]
+
+    model = genai.GenerativeModel(model_name="gemini-pro",generation_config=generation_config,safety_settings=safety_settings)
+
+    prompt_parts = [prompt]
+
+    response = model.generate_content(prompt_parts)
+    return (response.text)
+
 def group_json(input_json: Dict) -> Dict:
     """
     Group JSON formatted dictionary by key.
@@ -225,7 +264,7 @@ class DatasetGenerator:
 
         response = ""
         try:  # get response from LLM
-            response = re.sub(r"\n\s*\n", "\n\n", self.llm(prompt))
+            response = re.sub(r"\n\s*\n", "\n\n", get_response_from_http_llm(prompt))#self.llm(prompt))
             code_elements_combined = {}
             for item in code_qa_list:
                 code_elements_combined.update(item)
@@ -248,7 +287,7 @@ class DatasetGenerator:
                 instruction = f"Describe the purpose and significance of these {instruct_key}: [{instruct_value}] within the code."
                 item_prompt = f"\n### Instruction:\nUsing this context:\n{context}\n\n{instruction}.\n### Response:"
                 try:
-                    item_response = re.sub(r"\n\s*\n", "\n\n", self.llm(item_prompt))
+                    item_response = re.sub(r"\n\s*\n", "\n\n", get_response_from_http_llm(item_prompt))#self.llm(item_prompt))
                     logging.info(
                         f"\n***Itemized Response: {instruction}\n{item_response}"
                     )
