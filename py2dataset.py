@@ -148,21 +148,31 @@ def py2dataset(
         "model_config": model_config,
         "detailed": detailed
     }
-
+    count=1
     for python_pathname in Path(start).rglob("[!_]*.py"):
         params["python_pathname"] = str(python_pathname)
         params["relative_path"] = Path(os.path.relpath(python_pathname, os.path.dirname(get_start_dir(start))))
         base_pathname = Path(params["output_dir"]) / params["relative_path"]
         instruct_pathname = base_pathname.with_suffix(".py.instruct.json")
+        
         if instruct_pathname.exists() and skip_regen:
+            print(f"skipping: {instruct_pathname}")
+            print(count)
+            count+=1
             continue
         # process each python file in a separate process to manage memory
         if params["model_config"] is None and params["use_llm"]:
+            print(f"processing: {instruct_pathname}")
             proc = Process(target=process_single_python_file, kwargs=params)
             proc.start()
             proc.join()
+            print(count)
+            count+=1
         else:  # or process all files using use a single process
+            print(f"processing: {instruct_pathname}")            
             process_single_python_file(**params)
+            print(count)
+            count+=1
 
     return combine_json_files(output_dir, html)
 
