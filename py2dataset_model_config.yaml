@@ -3,9 +3,12 @@ inference_model:
   model_import_path: "ctransformers.AutoModelForCausalLM"
   model_inference_function: "from_pretrained"
   model_params:
-    model_path: "TheBloke/WizardCoder-Python-13B-V1.0-GGUF"
-    model_file: "wizardcoder-python-13b-v1.0.Q5_K_S.gguf"
+    model_path: "TheBloke/TinyLlama-1.1B-python-v0.1-GGUF"
+    model_file: "tinyllama-1.1b-python-v0.1.Q4_K_M.gguf"
     model_type: "llama"
+    #model_path: "TheBloke/WizardCoder-Python-13B-V1.0-GGUF"
+    #model_file: "wizardcoder-python-13b-v1.0.Q5_K_S.gguf"
+    #model_type: "llama"
     local_files_only: false
     #model_path: "./models/wizardcoder-python-13b-v1.0.Q4_0.gguf"
     #model_type: "llama"
@@ -22,10 +25,10 @@ inference_model:
 
     ## MODEL CONFIGURATION PARAMETERS (GPU 4090 - 24GB VRAM, CPU 5950x - 32 threads, 64GB RAM)
     #avx2 and gpu_layers are not compatible 
-    #lib: "avx2"
+    lib: "avx2"
     threads: 16
-    batch_size: 256 
-    context_length: 13000
-    max_new_tokens: 13000
-    gpu_layers: 100
+    batch_size: 25
+    context_length: 20480
+    max_new_tokens: 20480
+    #gpu_layers: 100
     reset: true
