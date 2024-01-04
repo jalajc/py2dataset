@@ -166,12 +166,12 @@ def py2dataset(
             proc = Process(target=process_single_python_file, kwargs=params)
             proc.start()
             proc.join()
-            print(count)
+            #print(count)
             count+=1
         else:  # or process all files using use a single process
             print(f"processing {count}: {python_pathname}")         
             process_single_python_file(**params)
-            print(count)
+            #print(count)
             count+=1
 
     return combine_json_files(output_dir, html)
