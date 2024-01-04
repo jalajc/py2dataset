@@ -156,20 +156,20 @@ def py2dataset(
         instruct_pathname = base_pathname.with_suffix(".py.instruct.json")
         
         if instruct_pathname.exists() and skip_regen:
-            print(f"skipping: {instruct_pathname}")
-            print(count)
+            print(f"skipping {count}: {python_pathname}")
+            #print(count)
             count+=1
             continue
         # process each python file in a separate process to manage memory
         if params["model_config"] is None and params["use_llm"]:
-            print(f"processing: {instruct_pathname}")
+            print(f"processing {count}: {python_pathname}")
             proc = Process(target=process_single_python_file, kwargs=params)
             proc.start()
             proc.join()
             print(count)
             count+=1
         else:  # or process all files using use a single process
-            print(f"processing: {instruct_pathname}")            
+            print(f"processing {count}: {python_pathname}")         
             process_single_python_file(**params)
             print(count)
             count+=1

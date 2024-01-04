@@ -210,7 +210,7 @@ class DatasetGenerator:
 
         response = model.generate_content(prompt_parts)
         end_time = time.time()
-        print(f"***gemini responded in: {end_time - start_time} seconds***")
+        #print(f"***gemini responded in: {end_time - start_time} seconds***")
         return (response.text)
 
     def get_response_from_llm(self, query: str, context: str) -> str:
@@ -325,8 +325,10 @@ class DatasetGenerator:
         if question_id.endswith("code_graph") or question_id.endswith("docstring"):
             response = info.get(question_id, {})
         elif self.use_llm and question_id.endswith("purpose"):
+            start_time=time.time()
             response = self.get_response_from_llm(query, context)
-            #print(response)
+            end_time=time.time()
+            print(f"***gemini responded in: {end_time-start_time} seconds***")
         else:
             response = clean_and_get_unique_elements(str(info.get(question_id, "")))
 
